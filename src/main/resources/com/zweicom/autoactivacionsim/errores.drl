@@ -1,0 +1,72 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+/* Asociados a los errores de Obtener Mensajes */
+
+rule "se asginan como verdaderos reintentosPlan y reintentosLista, cuando las respuestas previas son verdaderas"
+ruleflow-group "obtenerMensajes"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("resultadoPlan") == true,
+        getVariable("resultadoLinea") == true
+    )
+then
+    $processInstance.setVariable("reintentosPlan",1);
+    $processInstance.setVariable("reintentosListas",1);
+    $processInstance.setVariable("reintentosError",0);
+    LOGGER.debug("Se asignaron true a reintentosPlan y reintentosLista y false a reintentosError");
+end
+
+rule "se asgina como verdadero reintentosError, cuando alguna respuesta previa es falsa"
+ruleflow-group "obtenerMensajes"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("resultadoPlan") == false ||  getVariable("resultadoLinea") == false
+    )
+then
+    $processInstance.setVariable("reintentosPlan",0);
+    $processInstance.setVariable("reintentosListas",0);
+    $processInstance.setVariable("reintentosError",1);
+    LOGGER.debug("Se asignaron true a reintentosError");
+end
+
+/* Asociados a los errores de Obtener Estado Proceso */
+
+rule "Se asigna codigo de error para codigoProceso 1"
+ruleflow-group "erroresObtener"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("codigoProceso") == 1
+    )
+then
+    $processInstance.setVariable("error",214);
+    LOGGER.debug("Se asigna error 214, No reintentable de la etapa 1, cuarto servicio externo");
+end
+
+rule "Se asigna codigo de error para codigoProceso 2"
+ruleflow-group "erroresObtener"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("codigoProceso") == 2
+    )
+then
+    $processInstance.setVariable("error",224);
+    LOGGER.debug("Se asigna error 224, No reintentable de la etapa 2, cuarto servicio externo");
+end
+
+rule "Se asigna codigo de error para codigoProceso 7"
+ruleflow-group "erroresObtener"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("codigoProceso") == 7
+    )
+then
+    $processInstance.setVariable("error",274);
+    LOGGER.debug("Se asigna error 274, No reintentable de la etapa 7, cuarto servicio externo");
+end

@@ -1,0 +1,581 @@
+import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
+import org.drools.core.process.core.datatype.impl.type.StringDataType;
+import org.drools.core.process.core.datatype.impl.type.IntegerDataType;
+import org.drools.core.process.core.datatype.impl.type.BooleanDataType;
+import org.drools.core.process.core.datatype.impl.type.ListDataType;
+import org.drools.core.process.core.datatype.impl.type.FloatDataType;
+
+[
+  [
+    "name" : "Email",
+    "parameters" : [
+      "From" : new StringDataType(),
+      "To" : new StringDataType(),
+      "Subject" : new StringDataType(),
+      "Body" : new StringDataType()
+    ],
+    "displayName" : "Email",
+    "icon" : "defaultemailicon.gif"
+  ],
+
+  [
+    "name" : "Log",
+    "parameters" : [
+      "Message" : new StringDataType()
+    ],
+    "displayName" : "Log",
+    "icon" : "defaultlogicon.gif"
+  ],
+
+  [
+    "name" : "WebService",
+    "parameters" : [
+      "Url" : new StringDataType(),
+      "Namespace" : new StringDataType(),
+      "Interface" : new StringDataType(),
+      "Operation" : new StringDataType(),
+      "Parameter" : new StringDataType(),
+      "Endpoint" : new StringDataType(),
+      "Mode" : new StringDataType()
+    ],
+    "results" : [
+    "Result" : new ObjectDataType(),
+  ],
+    "displayName" : "WS",
+    "icon" : "defaultservicenodeicon.png"
+  ],
+
+  [
+    "name" : "Rest",
+    "parameters" : [
+      "Url" : new StringDataType(),
+      "Method" : new StringDataType(),
+      "ConnectTimeout" : new StringDataType(),
+      "ReadTimeout" : new StringDataType(),
+      "Username" : new StringDataType(),
+      "Password" : new StringDataType()
+    ],
+    "results" : [
+      "Result" : new ObjectDataType(),
+    ],
+    "displayName" : "REST",
+    "icon" : "defaultservicenodeicon.png"
+  ],
+
+    [
+    "name" : "DataBaseGDA",
+    "description" : "Invoke a DataBaseGDA",
+    "version" : "1.0",
+    "parameters" : [
+        "JNDI" : new StringDataType(),
+        "ObjectIN" : new ObjectDataType(),
+        "QUERY" : new StringDataType(),
+        "RETRY_COUNT" : new IntegerDataType(),
+        "RETRY_DELAY" : new IntegerDataType(),
+        "RETRY_CONDITION" : new StringDataType()
+    ],
+    "results" : [
+        "Result" : new ObjectDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "DataBase  Service",
+    "icon" : "icons/db.png"
+  ],
+
+  [
+    "name" : "DCO",
+    "description" : "Invoke a DCO service",
+    "version" : "1.0",
+    "parameters" : [
+        "msisdn" : new StringDataType(),
+        "IdServicio" : new StringDataType(),
+        "AmountToBill" : new StringDataType(),
+        "RETRY_COUNT" : new IntegerDataType(),
+        "RETRY_DELAY" : new IntegerDataType(),
+        "RETRY_CONDITION" : new ObjectDataType()
+    ],
+    "results" : [
+        "Result" : new ObjectDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "DCO Service",
+    "icon" : "icons/dco.png"
+  ],
+
+  [
+    "name" : "EnviaUSSD",
+    "description" : "Invoke a USSD service",
+    "version" : "1.0",
+    "parameters" : [
+        "MensajeOut" : new StringDataType(),
+        "EsperaRespuesta" : new BooleanDataType()
+    ],
+    "results" : [
+        "Resultado" : new IntegerDataType(),
+         "MensajeIn" : new StringDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Envia USSD",
+    "icon" : "icons/ussd.png"
+  ],
+
+  [
+    "name" : "GenericProcess",
+    "description" : "Workitems con parametros dinamicos",
+    "version" : "1.0",
+    "parameters" : [
+        "Param1" : new StringDataType(),
+        "Param2" : new StringDataType(),
+        "Param3" : new StringDataType(),
+        "Param4" : new StringDataType()
+    ],
+    "results" : [
+        "Result" : new StringDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Workitems Generico",
+    "icon" : "icons/zweicom.gif"
+  ],
+
+  [
+    "name" : "PlataformaZweicom",
+    "description" : "Mensaje a Plataforma Zweicom",
+    "version" : "1.0",
+    "parameters" : [
+        "Core" : new StringDataType(),
+        "Plgn" : new StringDataType(),
+        "Payload" : new ObjectDataType(),
+        "EsperaRespuesta" : new BooleanDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Plataforma Zweicom",
+    "icon" : "icons/zweicom.gif"
+  ],
+
+  [
+    "name" : "Process",
+    "description" : "Llamada a Proceso",
+    "version" : "1.0",
+    "parameters" : [
+        "ProcessID" : new StringDataType(),
+        "RemoteOuput" : new ListDataType(),
+        "Param1" : new StringDataType(),
+        "Param2" : new StringDataType(),
+        "Param3" : new StringDataType(),
+        "Param4" : new StringDataType()
+    ],
+    "results" : [
+        "Result" : new StringDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Llamada a Proceso",
+    "icon" : "icons/zweicom.gif"
+  ],
+
+   [
+    "name" : "RemoteProcess",
+    "description" : "Llamada Remota a Proceso",
+    "version" : "1.0",
+    "parameters" : [
+        "ZwervicioName" : new StringDataType(),
+        "ProcessID" : new StringDataType(),
+        "RemoteOuput" : new ListDataType(),
+        "Param1" : new StringDataType(),
+        "Param2" : new StringDataType(),
+        "Param3" : new StringDataType(),
+        "Param4" : new StringDataType()
+    ],
+    "results" : [
+        "Result" : new StringDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Llamada Remota a Proceso",
+    "icon" : "icons/zweicom.gif"
+  ],
+
+  [
+    "name" : "ResultGDA",
+    "description" : "Invoke a ResultGDA",
+    "version" : "1.0",
+    "parameters" : [
+        "Code" : new StringDataType(),
+        "Message" : new StringDataType()
+    ],
+    "results" : [
+        "trxId" : new StringDataType(),
+        "code" : new StringDataType(),
+        "message" : new StringDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "ResultGDA Service",
+    "icon" : "icons/send.png"
+  ],
+
+   [
+    "name" : "SMS_GDA",
+    "description" : "Invoke a SMS",
+    "version" : "1.0",
+    "parameters" : [
+        "Origin" : new StringDataType(),
+        "Destino" : new StringDataType(),
+        "Message" : new StringDataType(),
+        "Corrid" : new StringDataType(),
+        "EsperaRespuesta": new BooleanDataType()
+    ],
+    "results" : [
+        "Result" : new StringDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "SMS Service",
+    "icon" : "icons/sms.png"
+  ],
+
+  [
+    "name" : "TuxedoGDA",
+    "description" : "Invoke a TuxedoGDA",
+    "version" : "1.0",
+    "parameters" : [
+        "Service" : new StringDataType(),
+        "Request" : new ObjectDataType()
+    ],
+    "results" : [
+        "Result" : new ObjectDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "TUXEDO Service",
+    "icon" : "icons/zweicom.gif"
+  ],
+
+   [
+    "name" : "WebServiceClientGDA",
+    "description" : "Invoke a WS SOAP Client",
+    "version" : "1.0",
+    "parameters" : [
+        "ObjectIN" : new ObjectDataType(),
+        "Client" : new ObjectDataType(),
+        "RETRY_COUNT" : new IntegerDataType(),
+        "RETRY_DELAY" : new IntegerDataType(),
+        "RETRY_CONDITION" : new StringDataType()
+    ],
+    "results" : [
+        "Result" : new ObjectDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Web Service Client",
+    "icon" : "icons/zweicom.gif"
+  ],
+
+  [
+    "name" : "WebServiceGDA",
+    "description" : "Invoke a WS SOAP service",
+    "version" : "1.0",
+    "parameters" : [
+        "ObjectIN" : new ObjectDataType(),
+        "URL" : new StringDataType(),
+        "Operation" : new StringDataType(),
+        "RETRY_COUNT" : new IntegerDataType(),
+        "RETRY_DELAY" : new IntegerDataType(),
+        "RETRY_CONDITION" : new StringDataType()
+    ],
+    "results" : [
+        "Result" : new ObjectDataType()
+    ],
+    "category" : "Zweicom",
+    "displayName" : "Web Service",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "cambiarEstadoServicioWorkItem",
+    "description" : "falta descripcion",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "numeroContrato" : new FloatDataType(), 
+        "codigoPlan" : new FloatDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Cambiar Estado Servicio",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "modificarCuentaWorkItem",
+    "description" : "falta descripcion",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "fechaInicioActivacion" : new ObjectDataType(),
+        "fechaInicioInactivacion2" : new ObjectDataType(),
+        "numeroIdentificador" : new StringDataType(),
+        "tipoIdentificador" : new IntegerDataType(),
+        "ticketsToTe" : new BooleanDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Modificar Cuenta",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "validarProcesoPendienteWorkItem",
+    "description" : "falta descripcion",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "numeroContrato" : new FloatDataType(),
+        "numeroTelefonico" : new StringDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Validar Proceso Pendiente",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "obtenerEstadoProcesoWorkItem",
+    "description" : "falta descripcion",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "numeroContrato" : new FloatDataType(),
+        "numeroTelefonico" : new StringDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Obtener Estado Proceso",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+   [
+    "name" : "validarTipoClienteWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "dni" : new StringDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Consultar Cliente",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "consultarPersonaWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "dni" : new StringDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Consultar Datos Reneic",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "crearProspectoWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "cliente" : new ObjectDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Creacion Prospecto",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "actualizarClienteReniecWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "cliente" : new ObjectDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Actualizar Datos Cliente",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "registrarCambioPlanWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "numeroContrato" : new FloatDataType(), //no perder la conversion en WI
+        "idPlan" : new FloatDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Registrar Cambio de Plan",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "obtenerPlanWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "codigoPlan" : new FloatDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Obtener Plan",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "obtenerLineasClienteWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "dni" : new StringDataType(),
+        "mapRazon" : new ObjectDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Obtener Lineas Cliente",
+    "icon" : "icons/zweicom.gif"
+  ], 
+
+  [
+    "name" : "crearOrdenPorClienteWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "orden" : new ObjectDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Crear Orden Por Cliente",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "formatearTelefonoWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "numeroTelefono" : new StringDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Formatear Telefono",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "consultarDatosClienteVista2WorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "dni" : new StringDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Consultar Datos Cliente Vista",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "crearClienteBSCSWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "cliente" : new ObjectDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Crear Cliente BSCS",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "sincronizarClienteBSCSWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "idclienteBSCS" : new IntegerDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Sincronizar Cliente BSCS",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "cambiarTitularContratoWorkItem",
+    "description" : "",
+    "version" : "1.0",
+    "parameters" : [
+        "codigoTransaccion" : new StringDataType(),
+        "cambiarTitular" : new ObjectDataType()
+    ],
+    "results" : [
+        "resultado" : new ObjectDataType()
+    ],
+    "category" : "SOAINT",
+    "displayName" : "Cambiar Titular Contrato",
+    "icon" : "icons/zweicom.gif"
+  ],
+  
+  [
+    "name" : "businessRuleTask",
+    "description" : "Business Rule Task PAM",
+    "version" : "1.0",
+    "parameters" : [
+        "ruleFlowGroup" : new StringDataType()
+    ],
+    "category" : "PAM",
+    "displayName" : "Business Rule Task",
+    "icon" : "icons/ussd.png"
+  ]
+  
+]

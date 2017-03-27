@@ -1,0 +1,172 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+import com.zweicom.autoactivacionsim.Parametros;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+rule "Si el resultado es distinto de nulo, se obtienen los parametros y se agregan a un Objeto Parametros"
+ruleflow-group "cargarParametros"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("resultado") != null,
+        $resultado:getVariable("resultado")
+    )
+then
+    List<Object> lista = (List<Object>) $resultado;
+    Parametros parametros = new Parametros();
+    
+    for (Object data : lista) {  
+         Map<String, Object> mapa = (Map) data;    
+         
+         String id = (String) mapa.get("ID");
+         String name = (String) mapa.get("NOMBRE");
+         String valor = (String) mapa.get("VALOR");
+         
+         LOGGER.trace("{} : {}", name, valor);
+         /*
+         if( name.compareTo("reintentosConsultarPersona") == 0 ){
+             parametros.setReintentosConsultarPersona((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosCrearProspecto") == 0 ){
+             parametros.setReintentosCrearProspecto((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosActualizarClienteReneic") == 0 ){
+             parametros.setReintentosActualizarClienteReneic((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoCrearProspecto") == 0 ){
+             parametros.setTiempoCrearProspecto((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoActualizarClienteReniec") == 0 ){
+             parametros.setTiempoActualizarClienteReniec((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoConsultarPersona") == 0 ){
+             parametros.setTiempoConsultarPersona((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosRegistrarCambioPlan") == 0 ){
+             parametros.setReintentosRegistrarCambioPlan((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoRegistrarCambioPlan") == 0 ){
+             parametros.setTiempoRegistrarCambioPlan((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosValidarProcesoPendiente") == 0 ){
+             parametros.setReintentosValidarProcesoPendiente((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoValidarProcesoPendiente") == 0 ){
+             parametros.setTiempoValidarProcesoPendiente((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosCambiarEstadoServicio") == 0 ){
+             parametros.setReintentosCambiarEstadoServicio((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoCambiarEstadoServicio") == 0 ){
+             parametros.setTiempoCambiarEstadoServicio((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosModificarCuenta") == 0 ){
+             parametros.setReintentosModificarCuenta((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoModificarCuenta") == 0 ){
+             parametros.setTiempoModificarCuenta((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosObtenerPlan") == 0 ){
+             parametros.setReintentosObtenerPlan((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoObtenerPlan") == 0 ){
+             parametros.setTiempoObtenerPlan((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosObtenerLineasCliente") == 0 ){
+             parametros.setReintentosObtenerLineasCliente((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoObtenerLineasCliente") == 0 ){
+             parametros.setTiempoObtenerLineasCliente((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosFormatearTelefono") == 0 ){
+             parametros.setReintentosFormatearTelefono((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoFormatearTelefono") == 0 ){
+             parametros.setTiempoFormatearTelefono((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosCrearOrdenPorCliente") == 0 ){
+             parametros.setReintentosCrearOrdenPorCliente((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoCrearOrdenPorCliente") == 0 ){
+             parametros.setTiempoCrearOrdenPorCliente((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosConsultarDatosClienteVista2") == 0 ){
+             parametros.setReintentosConsultarDatosClienteVista2((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoConsultarDatosClienteVista2") == 0 ){
+             parametros.setTiempoConsultarDatosClienteVista2((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosCrearClienteBSCS") == 0 ){
+             parametros.setReintentosCrearClienteBSCS((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoCrearClienteBSCS") == 0 ){
+             parametros.setTiempoCrearClienteBSCS((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosSincronizarClienteBSCS") == 0 ){
+             parametros.setReintentosSincronizarClienteBSCS((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoSincronizarClienteBSCS") == 0 ){
+             parametros.setTiempoSincronizarClienteBSCS((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosConsultarDatosReniec") == 0 ){
+             parametros.setReintentosConsultarDatosReniec((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoConsultarDatosReniec") == 0 ){
+             parametros.setTiempoConsultarDatosReniec((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosCambiarTitularContrato") == 0 ){
+             parametros.setReintentosCambiarTitularContrato((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoCambiarTitularContrato") == 0 ){
+             parametros.setTiempoCambiarTitularContrato((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("reintentosGenericos") == 0 ){
+             parametros.setReintentosGenericos((Integer)elem.getValue());
+         }
+         
+         if( name.compareTo("tiempoGenericos") == 0 ){
+             parametros.setTiempoGenericos((Integer)elem.getValue());
+         }*/
+    }
+    cache.put("parametros",parametros);
+end

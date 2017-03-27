@@ -1,0 +1,335 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+/* Reglas Asociadas al envio de mensaje al SMS Center */
+rule "Se asigna true a resultadoOK en base a la respuesta del SMSCenter"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "SMS",
+        getVariable("resultado") != null,
+        $resultado:getVariable("resultado"),
+        $resultado == "OK"
+    )
+then
+    LOGGER.debug("resultado {}, resultado exitoso.",$resultado);
+    modify( $processInstance ){
+        setVariable("resultadoOK",true),
+        setVariable("reintentable",false),
+        setVariable("resultadoNOK",false)
+    }
+end
+
+rule "Se asigna true a resultadoNOK en base a la respuesta del SMSCenter"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "SMS",
+        getVariable("resultado") != null,
+        $resultado:getVariable("resultado"),
+        $resultado == "NOK"
+    )
+then
+    LOGGER.debug("resultado {}, resultado no exitoso.",$resultado);
+    modify( $processInstance ){
+        setVariable("resultadoOK",false),
+        setVariable("reintentable",true),
+        setVariable("resultadoNOK",false)
+    }
+end
+
+/* Reglas Asociadas a WI Validar Proceso Pendiente */
+
+rule "Se asigna true a resultadoOK en torno a resultado del WI Validar Proceso Pendiente"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("pendiente") == 0,
+        $codigo:getVariable("pendiente")
+    )
+then
+    LOGGER.debug("pendiente {}, resultado exitoso.",$codigo);
+    $processInstance.setVariable("resultadoOK",true);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a resultadoNOK en torno a resultado del WI Validar Proceso Pendiente"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("pendiente") == -1,
+        $codigo:getVariable("pendiente")
+    )
+then
+    LOGGER.debug("pendiente {}, resultado no reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",200);
+end
+
+rule "Se asigna true a reintentable en torno a resultado del WI Validar Estado Proceso"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("pendiente") == 1,
+        $codigo:getVariable("pendiente")
+    )
+then
+    LOGGER.debug("pendiente {}, resultado reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",true);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+/* Reglas Asociadas a WI Obtener Estado Proceso */
+
+rule "Se asigna true a resultadoOK en torno a resultado del WI Obtener Estado Proceso"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("estadoProceso") == "FP",
+        $codigo:getVariable("estadoProceso")
+    )
+then
+    LOGGER.debug("codeError {}, resultado exitoso.",$codigo);
+    $processInstance.setVariable("resultadoOK",true);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a resultadoNOK en torno a resultado del WI Obtener Estado Proceso"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("estadoProceso") == "NR",
+        $codigo:getVariable("estadoProceso")
+    )
+then
+    LOGGER.debug("codeError {}, resultado no reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",200);
+end
+
+rule "Se asigna true a reintentable en torno a resultado del WI Obtener Estado Proceso"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("estadoProceso") == "RI",
+        $codigo:getVariable("estadoProceso")
+    )
+then
+    LOGGER.debug("codeError {}, resultado reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",true);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+/* Reglas Asociadas a WI Cambiar Titular Contrato */
+
+rule "Se asigna true a resultaOK en torno a resultado del WI Cambiar Titular Contrato"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "CambiarTitularContrato",
+        getVariable("codeError") ( == 0 || == 50002 ),
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado exitoso.",$codigo);
+    $processInstance.setVariable("resultadoOK",true);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a reintentableNOK en torno a resultado del WI Cambiar Titular Contrato"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "CambiarTitularContrato",
+        getVariable("codeError") ( == 50001 || == 50007 || == 50003 || == 50005 || == 50006 || == 90000 ), //Se puede con mas de dos ??? ... dejarlos dentro de (  )
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado no reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",200);
+end
+
+/* Reglas Asociadas a WI Registrar Cambio Plan */
+
+rule "Se asigna true a resultaOK en torno a resultado del WI Registrar Cambio Plan"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "RegistrarCambioPlan",
+        getVariable("codeError") ( == 0 || == 50007 ),
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado exitoso.",$codigo);
+    $processInstance.setVariable("resultadoOK",true);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a reintentableNOK en torno a resultado del WI Registrar Cambio Plan"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "RegistrarCambioPlan",
+        getVariable("codeError") ( == 50001 || == 50002 || == 50003 || == 50005 || == 50006 || == 90000 ),
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado no reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",200);
+end
+
+/* Reglas Asociadas a WI Cambiar Estado Servicio */
+
+rule "Se asigna true a resultaOK en torno a resultado del WI Cambiar Estado Servicio"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "CambiarEstadoServicio",
+        getVariable("codeError") ( == 0 || == 50005 ),
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado exitoso.",$codigo);
+    $processInstance.setVariable("resultadoOK",true);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a reintentableNOK en torno a resultado del WI Cambiar Estado Servicio"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == "CambiarEstadoServicio",
+        getVariable("codeError") ( == 50001 || == 50002 || == 50003 || == 50006 || == 50007 || == 90000 ),
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado no reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",200);
+end
+
+/* GENERALES */
+
+rule "Se asigna true a resultaOK en torno a resultado del WI"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") == null || == "",
+        getVariable("codeError") == 0,
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado exitoso.",$codigo);
+    $processInstance.setVariable("resultadoOK",true);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a reintentable en torno a codigo de error desconocidoI"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("pendiente") ( == "" || == null ),
+        getVariable("codeError") ( != 10000 && != 20000 && != 20001 && != 20002 && != 50004 && != 50001 && != 50002 && != 50003 && != 50005 && != 50006 && != 50007 && != 90000 && != 0 ),
+        $codigo:getVariable("codeError"),
+        getVariable("resultadoNOK") != true
+    )
+then
+    LOGGER.debug("codeError {}, resultado reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",true);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a reintentable en torno a resultado del WI"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("codeError") ( == 10000 || == 20000 || == 20001 || == 20002 || == 50004 ),
+        $codigo:getVariable("codeError"),
+        getVariable("resultadoNOK") != true
+    )
+then
+    LOGGER.debug("codeError {}, resultado reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",true);
+    $processInstance.setVariable("resultadoNOK",false);
+end
+
+rule "Se asigna true a resultadoNOK en torno a resultado del WI"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("soaint") ( == null || == "" ),
+        getVariable("codeError") ( == 50001 || == 50002 || == 50003 || == 50005 || == 50006 || == 50007 || == 90000 ),
+        $codigo:getVariable("codeError")
+    )
+then
+    LOGGER.debug("codeError {}, resultado no reintentable.",$codigo);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",200);
+end
+
+rule "Se asigna true a resultadoNOK en torno a numero maximo de reintentos"
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        //(int)getVariable("reintentoMAX") <= (int)getVariable("reintentoWI"),
+        $reintentoMAX:getVariable("reintentoMAX"),
+        $reintentoWI:getVariable("reintentoWI"),
+        (Integer)$reintentoWI >= (Integer)$reintentoMAX
+    )
+then
+    LOGGER.debug("el servicio llego a su maximo reintento, maximo: {}",$reintentoMAX);
+    modify( $processInstance ){
+        setVariable("resultadoOK",false),
+        setVariable("reintentable",false),
+        setVariable("resultadoNOK",true),
+        setVariable("error",100)
+    }
+end
+
+rule "Se asigna true a resultadoNOK cuando ambos reintentos son iguales "
+ruleflow-group "reintentos"
+when
+    $processInstance: WorkflowProcessInstance(
+        $reintentoMAX:getVariable("reintentoMAX"),
+        $reintentoWI:getVariable("reintentoWI"),
+        getVariable("reintentoMAX") != null ,  getVariable("reintentoWI") != null, 
+        (Integer)$reintentoMAX == (Integer)$reintentoWI
+    )
+then
+    LOGGER.debug("el servicio llego a su maximo reintento, mod2 , maximo: {}",(Integer)$reintentoMAX);
+    $processInstance.setVariable("resultadoOK",false);
+    $processInstance.setVariable("reintentable",false);
+    $processInstance.setVariable("resultadoNOK",true);
+    $processInstance.setVariable("error",100);
+end
+

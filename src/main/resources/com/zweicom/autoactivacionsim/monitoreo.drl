@@ -1,0 +1,43 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+import com.zweicom.autoactivacionsim.Parametros;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+rule "Si la variable argumento viene nula se muestra las Key de la CACHE"
+ruleflow-group "monitoreo"
+when
+    $processInstance: WorkflowProcessInstance(
+       getVariable("argumento") == null
+    )
+then
+    LOGGER.trace("Monitoreo: Se buscaran las llaves que contiene la CACHE");
+    Iterator it = cache.entrySet().iterator();
+    while (it.hasNext()) {
+        Map.Entry pair = (Map.Entry)it.next();
+        LOGGER.trace("Una llave que contiene la CACHE es: {}",pair.getKey());
+        it.remove();
+    }
+end 
+
+rule "Si la variable argumento es distinto de nula, se eliminar elemento de la CACHE"
+ruleflow-group "monitoreo"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("argumento") != null,
+        $key: getVariable("argumento")
+    )
+then
+    LOGGER.trace("Monitoreo: Elementos en CACHE {}",cache.size());
+    LOGGER.trace("Monitoreo: Se elimina elemento con KEY -> {}",$key);
+    cache.remove($key);
+    LOGGER.trace("Monitoreo: Elementos en CACHE {}",cache.size());
+end 

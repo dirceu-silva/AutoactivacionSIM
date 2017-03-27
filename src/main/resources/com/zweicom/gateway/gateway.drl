@@ -1,0 +1,183 @@
+package com.zweicom.gateway;
+
+import com.zweicom.api.message.runtime.command.RuntimeCommand;
+// Logger
+global org.slf4j.Logger LOGGER;
+// Numero de Zwessiones
+global java.lang.Integer sessions;
+
+// Regla Por defecto para ejecucion de Procesos 
+rule "Balanaceo - Zwession"
+    when 
+        $msg : RuntimeCommand(mensaje.containsKey("numeroTelefono"),  $mensaje : mensaje)
+    then
+        LOGGER.debug("\n\n\t Agregamos  Balanceo   !!\n\n");
+        
+        String strMSISDN = (String) $mensaje.get("numeroTelefono");
+        
+        Long msisdn = Long.valueOf(strMSISDN);
+        
+        int balancer = (int) (msisdn % sessions ) + 1;
+        
+        // Agregamos a Zwession
+        $msg.setZwessionBalancer("org.kie.kbase1.ksession" + balancer, $mensaje);        
+end
+
+rule "Regla Modificar Mensaje"
+salience -50
+no-loop
+when 
+    $msg : RuntimeCommand(!mensaje.containsKey("prueba"),mensaje.containsKey("numeroContrato"), mensaje.containsKey("numeroDocumento"), mensaje.containsKey("planDestino"), mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje   !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	   	$mensaje.put("numeroContrato",  Long.valueOf((String) $mensaje.get("numeroContrato")));
+	   	$mensaje.put("planDestino",  Long.valueOf((String) $mensaje.get("planDestino")));
+	    $mensaje.put("DNI",  (String) $mensaje.get("numeroDocumento"));
+	    $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+	    
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+
+end;
+
+
+rule "Regla Modificar Mensaje Cambio de Plan"
+salience -51
+no-loop
+when 
+    $msg : RuntimeCommand(mensaje.containsKey("etapa2"),mensaje.containsKey("numeroContrato"), mensaje.containsKey("numeroDocumento"), mensaje.containsKey("planDestino"), mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje Cambio de Plan  !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	   	$mensaje.put("nuevoNumeroContrato",  Long.valueOf((String) $mensaje.get("numeroContrato")));
+	   	$mensaje.put("nuevoCodigoPlanplanDestino",  Long.valueOf((String) $mensaje.get("planDestino")));
+	    $mensaje.put("DNI",  (String) $mensaje.get("numeroDocumento"));
+	    $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+
+end;
+
+rule "Regla Modificar Mensaje Envio Mensaje"
+salience -52
+no-loop
+when 
+    $msg : RuntimeCommand(mensaje.containsKey("etapa3"), mensaje.containsKey("numeroDocumento"), mensaje.containsKey("planDestino"), mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje Envio Mensaje  !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	   	$mensaje.put("codigoPlan",  Long.valueOf((String) $mensaje.get("planDestino")));
+	    $mensaje.put("DNI",  (String) $mensaje.get("numeroDocumento"));
+	    $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+end;
+
+rule "Regla Modificar Creacion Usuario En CRM"
+salience -53
+no-loop
+when 
+    $msg : RuntimeCommand(mensaje.containsKey("etapa4"), mensaje.containsKey("numeroDocumento"), mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje Creacion Usuario En CRM  !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	    $mensaje.put("DNI",  (String) $mensaje.get("numeroDocumento"));
+	    $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+end;
+
+rule "Regla Modificar Creacion De Orden En CRM"
+salience -54
+no-loop
+when 
+    $msg : RuntimeCommand(mensaje.containsKey("etapa5"), mensaje.containsKey("numeroIncidente"), mensaje.containsKey("centroPoblado"), mensaje.containsKey("numeroDocumento"), mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje Creacion De Orden En CRM  !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	   $mensaje.put("DNI",  (String) $mensaje.get("numeroDocumento"));
+	   $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+	   $mensaje.put("codigoIncidente",  (String) $mensaje.get("numeroIncidente"));
+	   $mensaje.put("centroPoblado",  (String) $mensaje.get("centroPoblado"));
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+end;
+
+rule "Regla Modificar Creacion Usuario En BSCS"
+salience -55
+no-loop
+when 
+    $msg : RuntimeCommand(mensaje.containsKey("etapa6"), mensaje.containsKey("idCliente"),mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje Creacion Usuario En BSCS  !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	   	$mensaje.put("idCliente",  Long.valueOf((String) $mensaje.get("idCliente")));
+	    $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+end;
+
+rule "Regla Modificar Take Over"
+salience -56
+no-loop
+when 
+    $msg : RuntimeCommand(mensaje.containsKey("etapa7"),mensaje.containsKey("numeroContrato"), mensaje.containsKey("idClienteBSCS"), mensaje.containsKey("numeroTelefono"), $mensaje : mensaje, $trxId : header.dst.trxId)
+    then
+       LOGGER.debug("\n\n\t Regla Modificar Mensaje Take Over  !!\n\n");
+		
+		$mensaje.put("codigoTransaccion",  (String) $trxId);
+	   	$mensaje.put("numeroContrato",  Long.valueOf((String) $mensaje.get("numeroContrato")));
+	   	$mensaje.put("idClienteBSCS",  Long.valueOf((String) $mensaje.get("idClienteBSCS")));
+	    $mensaje.put("MSISDN",  (String) $mensaje.get("numeroTelefono"));
+	    $mensaje.put("numeroTelefono",  (String) $mensaje.get("numeroTelefono"));
+
+       // Ejecutamos Proceso
+       $msg.setParams($mensaje);
+
+end;
+
+rule "Regla ActivarSIM"
+salience -100
+no-loop
+when 
+    $msg : RuntimeCommand(header.dst.procesoId == null,  $mensaje : mensaje)
+    then
+       LOGGER.debug("\n\n\tRegla ActivarSIM   !!\n\n");
+       String process = "AutoactivacionSIM.ActivarSIM";
+       
+       LOGGER.debug("Ejecutamos Proceso {}   !!", process);
+
+       // Ejecutamos Proceso
+       $msg.executeProcess(process);
+    
+       retract($msg);
+end;
+
+rule "Regla Generica"
+salience -100
+no-loop
+when 
+    $msg : RuntimeCommand(header.dst.procesoId != null, $procesoId: header.dst.procesoId)
+    then
+       LOGGER.debug("\n\n\t Regla Generica   !!\n\n");
+       
+       LOGGER.debug("Ejecutamos Proceso {}   !!", $procesoId);
+
+       // Ejecutamos Proceso
+       $msg. executeProcess($procesoId);
+    
+       retract($msg);
+end;

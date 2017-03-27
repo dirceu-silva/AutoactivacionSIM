@@ -1,0 +1,17 @@
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <kbase name="com.zweicom.temporal.kbase" default="false" eventProcessingMode="stream" equalsBehavior="identity" packages="com.zweicom.gateway">
+    <ksession name="zweicom-temporal" type="stateful" default="false" clockType="realtime"/>
+  </kbase>
+  <kbase name="org.kie.kbase1" default="true" eventProcessingMode="stream" equalsBehavior="identity">
+    <ksession name="org.kie.kbase1.ksession1" type="stateful" default="true" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession2" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession3" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession4" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession5" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession6" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession7" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession8" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession9" type="stateful" default="false" clockType="realtime"/>
+    <ksession name="org.kie.kbase1.ksession10" type="stateful" default="false" clockType="realtime"/>
+  </kbase>
+</kmodule>

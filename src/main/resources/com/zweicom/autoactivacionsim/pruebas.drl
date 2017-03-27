@@ -1,0 +1,14 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+import com.zweicom.autoactivacionsim.Estados;
+
+rule "solicitar num a la WM"
+ruleflow-group "buscarNUM"
+when
+    $proceso: WorkflowProcessInstance()
+    $estado: Estados()
+then
+    $proceso.setVariable("numero",(Integer)((Estados)$estado).getEtapa());
+    delete($estado);
+end

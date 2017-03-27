@@ -1,0 +1,16 @@
+package com.zweicom.autoactivacionsim;
+
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+rule "Limpiar Cache"
+ruleflow-group "limpiar"
+when
+    eval(true)
+then
+    LOGGER.info("limpiando cache  global que tiene [{}] elementos",cache.size());  
+    cache.clear();
+end

@@ -1,0 +1,213 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+import com.zweicom.autoactivacionsim.Estados;
+import com.zweicom.autoactivacionsim.Parametros;
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+/******** Inicializar Variables de Proceso ********/
+
+rule "Se inicializan variables de proceso correspondiente a las etapas si se encuentra en cache objeto con la llave asociada al MSISDN"
+ruleflow-group "inicializar"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null ,
+        $msisdn:getVariable("MSISDN")
+    )
+
+    eval( cache.containsKey( $msisdn ) )
+then
+    LOGGER.debug("[Etapas DRL] Se inicializar todas las variables de procesos asociados a las etapas");
+    Estados estados = (Estados) cache.get($msisdn);
+    $processInstance.setVariable("etapa1",estados.getEtapa1());
+    $processInstance.setVariable("etapa2",estados.getEtapa2());
+    $processInstance.setVariable("etapa3",estados.getEtapa3());
+    $processInstance.setVariable("etapa4",estados.getEtapa4());
+    $processInstance.setVariable("etapa5",estados.getEtapa5());
+    $processInstance.setVariable("etapa6",estados.getEtapa6());
+    $processInstance.setVariable("etapa7",estados.getEtapa7());
+    
+    $processInstance.setVariable("error",0);
+    $processInstance.setVariable("jndi","java:jboss/datasources/Asim");
+    
+end
+
+rule "Se inicializan variables de proceso correspondiente a las etapas en false si no se encuentra en cache objeto con la llave asociada al MSISDN"
+ruleflow-group "inicializar"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null ,
+        $msisdn:getVariable("MSISDN")
+    )
+    eval( !cache.containsKey( $msisdn ) )
+then
+    LOGGER.debug("[Etapas DRL] Etapas inicializadas en false");
+    $processInstance.setVariable("etapa1",false);
+    $processInstance.setVariable("etapa2",false);
+    $processInstance.setVariable("etapa3",false);
+    $processInstance.setVariable("etapa4",false);
+    $processInstance.setVariable("etapa5",false);
+    $processInstance.setVariable("etapa6",false);
+    $processInstance.setVariable("etapa7",false);
+    
+    $processInstance.setVariable("error",0);
+    $processInstance.setVariable("jndi","java:jboss/datasources/Asim");
+end
+
+rule "Se carga Parametros con valores por defecto cuando no se a cargado el objeto"
+ruleflow-group "inicializar"
+when
+    eval(!cache.containsKey("parametros"))
+then
+    LOGGER.debug("[Etapas DRL] Se crea Parametros por defecto");
+    Parametros parametros = new Parametros();
+    cache.put("parametros",parametros);
+end
+
+rule "Se carga Estados con valores por defecto cuando no se encuentre en la cache"
+ruleflow-group "inicializar"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null ,
+        $msisdn:getVariable("MSISDN")
+    )
+    eval(!cache.containsKey( $msisdn ))
+then
+    LOGGER.debug("[Etapas DRL] Se crea Estados por defecto para usuario: {}",$msisdn);
+    Estados estados = new Estados();
+    cache.put( $msisdn ,estados);
+end
+/******** Termino de Autoactivacion ********/
+
+rule "Se elimina de la cache el hecho asociado al MSISDN"
+ruleflow-group "termino"
+lock-on-active true
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+    )
+    eval( cache.containsKey( $msisdn ) )
+then
+    cache.remove($msisdn);
+    LOGGER.debug("[Etapas DRL] Se elimina de la CACHE estados del MSISDN {}",$msisdn);
+end
+
+/******** Termino de etapas ********/
+
+rule "Se actualiza a true la variable de etapa1"
+ruleflow-group "etapa1"
+lock-on-active true
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+    )
+then
+    //$processInstance.setVariable("etapa1",true);
+    Estados estados = (Estados)cache.get( $msisdn );
+    estados.setEtapa1(true);
+    cache.put( $msisdn , estados );
+    LOGGER.debug("[Etapas DRL] etapa1 completada para usuario {}",$msisdn);
+end
+
+rule "Se actualiza a true la variable de etapa2"
+ruleflow-group "etapa2"
+lock-on-active true
+when
+     $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+     )
+then
+     //$processInstance.setVariable("etapa2",true);
+     Estados estados = (Estados)cache.get($msisdn);
+     estados.setEtapa2(true);
+     cache.put("estados",estados);
+     LOGGER.debug("[Etapas DRL] etapa2 completada para usuario {}",$msisdn);
+end
+
+rule "Se actualiza a true la variable de etapa3"
+ruleflow-group "etapa3"
+lock-on-active true
+when
+     $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+     )
+then
+     //$processInstance.setVariable("etapa3",true);
+     Estados estados = (Estados)cache.get($msisdn);
+     estados.setEtapa3(true);
+     cache.put("estados",estados);
+     LOGGER.debug("[Etapas DRL] etapa3 completada para usuario {}",$msisdn);
+end
+
+rule "Se actualiza a true la variable de etapa4"
+ruleflow-group "etapa4"
+lock-on-active true
+when
+     $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+     )
+then
+     //$processInstance.setVariable("etapa4",true);
+     Estados estados = (Estados)cache.get($msisdn);
+     estados.setEtapa4(true);
+     cache.put("estados",estados);
+     LOGGER.debug("[Etapas DRL] etapa4 completada para usuario {}",$msisdn);
+end
+
+rule "Se actualiza a true la variable de etapa5"
+ruleflow-group "etapa5"
+lock-on-active true
+when
+     $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+     )
+then
+     //$processInstance.setVariable("etapa5",true);
+     Estados estados = (Estados)cache.get($msisdn);
+     estados.setEtapa5(true);
+     cache.put("estados",estados);
+     LOGGER.debug("[Etapas DRL] etapa5 completada para usuario {}",$msisdn);
+end
+
+rule "Se actualiza a true la variable de etapa6"
+ruleflow-group "etapa6"
+lock-on-active true
+when
+     $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+     )
+then
+     //$processInstance.setVariable("etapa6",true);
+     Estados estados = (Estados)cache.get($msisdn);
+     estados.setEtapa6(true);
+     cache.put("estados",estados);
+     LOGGER.debug("[Etapas DRL] etapa6 completada para usuario {}",$msisdn);
+end
+
+rule "Se actualiza a true la variable de etapa7"
+ruleflow-group "etapa7"
+lock-on-active true
+when
+     $processInstance: WorkflowProcessInstance(
+        getVariable("MSISDN") != null,
+        $msisdn : getVariable("MSISDN")
+     )
+then
+     //$processInstance.setVariable("etapa7",true);
+     Estados estados = (Estados)cache.get($msisdn);
+     estados.setEtapa7(true);
+     cache.put("estados",estados);
+     LOGGER.debug("[Etapas DRL] etapa7 completada para usuario {}",$msisdn);
+end
+

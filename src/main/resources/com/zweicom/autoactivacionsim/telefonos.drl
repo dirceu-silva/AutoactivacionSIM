@@ -1,0 +1,55 @@
+package com.zweicom.autoactivacionsim;
+
+import org.kie.api.runtime.process.WorkflowProcessInstance;
+import com.zweicom.proyectos.ws.soaint.pe.gestioncliente.dto.Telefono;
+import java.util.List;
+import java.util.Iterator;
+// Logger
+global org.slf4j.Logger LOGGER;
+
+// Global de Cache
+global java.util.Map<String, Object> cache;
+
+rule "Si existe algun numero telefonico en la lista Telefonos, es asignada la variable MSISDN con uno de ellos"
+ruleflow-group "listaTelefonos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("telefonos") != null,
+        $lista:getVariable("telefonos"),
+        getVariable("numeros") > getVariable("posicion"),
+        $pos: getVariable("posicion")
+    )
+then
+    Telefono tmp;
+    
+    tmp = (Telefono)((List)$lista).get((Integer)$pos);
+     
+    $processInstance.setVariable("MSISDN",tmp.getNumero());
+    LOGGER.debug("[TELEFONOS DRL]El MSISDN es asignado con el valor {}",tmp.getNumero());
+    
+    $processInstance.setVariable("continuar",false);
+end
+
+rule "Si no existe algun numero telefonico en la lista Telefonos, se proceso a continuar el proceso asignando TRUE a la variable continuar"
+ruleflow-group "listaTelefonos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("telefonos") != null,
+        $lista:getVariable("telefonos"),
+        getVariable("numeros") == getVariable("posicion")
+    )
+then
+    LOGGER.debug("La lista de telefonos no cuenta con mas numeros telefonicos");
+    $processInstance.setVariable("continuar",true);
+end
+
+rule "Si no existe alguna lista de telefons, se proceso a continuar el proceso asignando TRUE a la variable continuar"
+ruleflow-group "listaTelefonos"
+when
+    $processInstance: WorkflowProcessInstance(
+        getVariable("telefonos") == null
+    )
+then
+    LOGGER.debug("no se encuentra lista de telefonos");
+    $processInstance.setVariable("continuar",true);
+end
